@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block title %}My Dashboard - E-commerce Store{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- User Sidebar -->
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">My Account</h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-user-circle fa-5x text-primary"></i>
+                </div>
+                <h5>{{ user.FullName }}</h5>
+                <p class="text-muted">{{ user.Email }}</p>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="{{ url_for('user.dashboard') }}" class="list-group-item list-group-item-action active">
+                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                </a>
+                <a href="{{ url_for('user.profile') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-user me-2"></i>My Profile
+                </a>
+                <a href="{{ url_for('user.orders') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-shopping-bag me-2"></i>My Orders
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                    <i class="fas fa-heart me-2"></i>Wishlist
+                </a>
+                <a href="{{ url_for('auth.logout') }}" class="list-group-item list-group-item-action text-danger">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="col-md-9">
+        <!-- Welcome Banner -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2>Welcome back, {{ user.FullName.split()[0] }}!</h2>
+                <p class="lead">Here's what's happening with your account.</p>
+            </div>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-4 mb-md-0">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <i class="fas fa-shopping-bag fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Orders</h5>
+                        <p class="card-text display-6">{{ recent_orders|length }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{{ url_for('user.orders') }}" class="btn btn-sm btn-primary">View All Orders</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4 mb-md-0">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <i class="fas fa-heart fa-3x text-danger mb-3"></i>
+                        <h5 class="card-title">Wishlist</h5>
+                        <p class="card-text display-6">0</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="#" class="btn btn-sm btn-primary">View Wishlist</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <i class="fas fa-comments fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Reviews</h5>
+                        <p class="card-text display-6">0</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="#" class="btn btn-sm btn-primary">View Reviews</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Orders -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Orders</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_orders %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in recent_orders %}
+                            <tr>
+                                <td>#{{ order.OrderID }}</td>
+                                <td>{{ order.OrderDate.strftime('%Y-%m-%d') }}</td>
+                                <td>${{ order.TotalAmount|round(2) }}</td>
+                                <td>
+                                    <span class="badge {% if order.Status == 'Completed' %}bg-success{% elif order.Status == 'Pending' %}bg-warning{% elif order.Status == 'Cancelled' %}bg-danger{% else %}bg-info{% endif %}">
+                                        {{ order.Status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('user.order_detail', order_id=order.OrderID) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-shopping-bag fa-4x text-muted mb-3"></i>
+                    <h5>No orders yet</h5>
+                    <p>You haven't placed any orders yet.</p>
+                    <a href="{{ url_for('main.shop') }}" class="btn btn-primary">Start Shopping</a>
+                </div>
+                {% endif %}
+            </div>
+            {% if recent_orders %}
+            <div class="card-footer text-end">
+                <a href="{{ url_for('user.orders') }}" class="btn btn-primary btn-sm">View All Orders</a>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Recommended Products -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Recommended For You</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for i in range(4) %}
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100">
+                            <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" class="card-img-top" alt="Product">
+                            <div class="card-body">
+                                <h6 class="card-title">Product Name</h6>
+                                <p class="card-text fw-bold">$99.99</p>
+                                <a href="#" class="btn btn-sm btn-primary w-100">View Product</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

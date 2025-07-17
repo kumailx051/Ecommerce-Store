@@ -1,0 +1,554 @@
+/* Modern Profile Page Styling */
+:root {
+  --primary: #0d6efd;
+  --primary-dark: #0b5ed7;
+  --primary-light: #e7f0ff;
+  --secondary: #6c757d;
+  --success: #198754;
+  --danger: #dc3545;
+  --warning: #ffc107;
+  --info: #0dcaf0;
+  --light: #f8f9fa;
+  --dark: #212529;
+  --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  --hover-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  --border-radius: 12px;
+}
+
+/* Profile Sidebar */
+.profile-sidebar {
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-sidebar:hover {
+  box-shadow: var(--hover-shadow);
+}
+
+.profile-header {
+  padding: 2rem 1.5rem;
+  text-align: center;
+  background: linear-gradient(135deg, var(--primary-light), #f8f9fa);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 1.25rem;
+  position: relative;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid white;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), #4e85fd);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 600;
+  border: 4px solid white;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.profile-name {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--dark);
+}
+
+.profile-email {
+  color: var(--secondary);
+  margin-bottom: 0;
+  font-size: 0.9rem;
+}
+
+.profile-nav {
+  padding: 1.5rem 0;
+  flex-grow: 1;
+}
+
+.profile-nav .nav-link {
+  padding: 0.75rem 1.5rem;
+  color: var(--dark);
+  font-weight: 500;
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.profile-nav .nav-link i {
+  margin-right: 0.75rem;
+  width: 20px;
+  text-align: center;
+  color: var(--secondary);
+  transition: all 0.2s ease;
+}
+
+.profile-nav .nav-link:hover {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  border-left-color: var(--primary);
+}
+
+.profile-nav .nav-link:hover i {
+  color: var(--primary);
+}
+
+.profile-nav .nav-link.active {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  border-left-color: var(--primary);
+  font-weight: 600;
+}
+
+.profile-nav .nav-link.active i {
+  color: var(--primary);
+}
+
+.profile-actions {
+  padding: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.profile-actions .btn-outline-danger {
+  border-color: var(--danger);
+  color: var(--danger);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.profile-actions .btn-outline-danger:hover {
+  background-color: var(--danger);
+  color: white;
+}
+
+/* Content Cards */
+.content-card {
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  margin-bottom: 2rem;
+}
+
+.content-card:hover {
+  box-shadow: var(--hover-shadow);
+}
+
+.content-card .card-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: white;
+}
+
+.content-card .card-header h5 {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--dark);
+}
+
+.content-card .card-header p {
+  color: var(--secondary);
+  margin-bottom: 0;
+}
+
+.content-card .card-body {
+  padding: 1.5rem;
+}
+
+/* Form Elements */
+.form-label {
+  font-weight: 500;
+  color: var(--dark);
+  margin-bottom: 0.5rem;
+}
+
+.form-control {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  background-color: #f8f9fa;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus {
+  border-color: var(--primary);
+  background-color: white;
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
+}
+
+.form-text {
+  font-size: 0.85rem;
+  color: var(--secondary);
+}
+
+textarea.form-control {
+  resize: none;
+  min-height: 100px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), #4e85fd);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #0b5ed7, #3d74e6);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+}
+
+/* Order Table */
+.order-table {
+  margin-bottom: 0;
+}
+
+.order-table th {
+  font-weight: 600;
+  color: var(--dark);
+  border-top: none;
+  border-bottom: 2px solid #dee2e6;
+  padding: 1rem;
+}
+
+.order-table td {
+  vertical-align: middle;
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.status-pending {
+  background-color: rgba(255, 193, 7, 0.1);
+  color: #997404;
+}
+
+.status-processing {
+  background-color: rgba(13, 202, 240, 0.1);
+  color: #087990;
+}
+
+.status-shipped {
+  background-color: rgba(13, 110, 253, 0.1);
+  color: var(--primary);
+}
+
+.status-delivered {
+  background-color: rgba(25, 135, 84, 0.1);
+  color: var(--success);
+}
+
+.status-cancelled {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: var(--danger);
+}
+
+.btn-sm {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+/* Address Cards */
+.address-card {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.address-card:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+}
+
+.address-header {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.address-header h6 {
+  margin-bottom: 0;
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.default-badge {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.address-body {
+  padding: 1rem;
+  flex-grow: 1;
+}
+
+.address-body p {
+  margin-bottom: 0.5rem;
+  color: var(--secondary);
+}
+
+.address-body p:first-child {
+  font-weight: 500;
+  color: var(--dark);
+}
+
+.address-actions {
+  padding: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  background-color: var(--primary-light);
+  color: var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  font-size: 2rem;
+}
+
+.empty-state h6 {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--dark);
+}
+
+.empty-state p {
+  color: var(--secondary);
+  margin-bottom: 1.5rem;
+}
+
+/* Account Danger Zone */
+.account-danger-zone {
+  background-color: rgba(220, 53, 69, 0.05);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.account-danger-zone h6 {
+  color: var(--danger);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.account-danger-zone p {
+  color: var(--secondary);
+  margin-bottom: 1.25rem;
+}
+
+.btn-danger {
+  background-color: var(--danger);
+  border: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-danger:hover {
+  background-color: #bb2d3b;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+}
+
+/* Wishlist Cards */
+.wishlist-card {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.wishlist-card:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+}
+
+.wishlist-img {
+  position: relative;
+  height: 180px;
+}
+
+.wishlist-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.wishlist-card:hover .wishlist-img img {
+  transform: scale(1.05);
+}
+
+.remove-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--danger);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.remove-btn:hover {
+  background-color: var(--danger);
+  color: white;
+}
+
+.wishlist-body {
+  padding: 1rem;
+}
+
+.wishlist-body h6 {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wishlist-body .price {
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+/* Modal Styling */
+.modal-content {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.modal-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1.25rem 1.5rem;
+}
+
+.modal-header .modal-title {
+  font-weight: 600;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1.25rem 1.5rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+  .profile-sidebar {
+    margin-bottom: 2rem;
+  }
+  
+  .profile-nav .nav-link {
+    padding: 0.6rem 1.25rem;
+  }
+  
+  .content-card .card-header,
+  .content-card .card-body {
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .avatar-placeholder {
+    font-size: 2rem;
+  }
+  
+  .order-table {
+    min-width: 650px;
+  }
+  
+  .wishlist-img {
+    height: 160px;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.tab-pane {
+  animation: fadeIn 0.3s ease-out;
+}

@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+
+{% block title %}My Orders - E-commerce Store{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/order.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="orders-header">
+        <h1>My Orders</h1>
+        <p>Track and manage your orders</p>
+    </div>
+
+    <div class="orders-container">
+        {% if orders %}
+            <div class="orders-filter">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="search-box">
+                            <input type="text" id="orderSearch" class="form-control" placeholder="Search orders...">
+                            <i class="fas fa-search search-icon"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                        <div class="filter-dropdown">
+                            <label for="statusFilter" class="me-2">Filter by:</label>
+                            <select id="statusFilter" class="form-select d-inline-block w-auto">
+                                <option value="all">All Orders</option>
+                                <option value="pending">Pending</option>
+                                <option value="processing">Processing</option>
+                                <option value="shipped">Shipped</option>
+                                <option value="delivered">Delivered</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="orders-list">
+                {% for order in orders %}
+                <div class="order-card" data-status="{{ order.get('Status', '').lower() }}">
+                    <div class="order-header">
+                        <div class="order-info">
+                            <h5>Order #{{ order.get('OrderID', '') }}</h5>
+                            <p class="order-date">{{ order.get('OrderDate', '').strftime('%B %d, %Y') if order.get('OrderDate') else 'N/A' }}</p>
+                        </div>
+                        <div class="order-status">
+                            <span class="status-badge status-{{ order.get('Status', '').lower() }}">
+                                {{ order.get('Status', 'Processing') }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="order-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="order-detail">
+                                    <h6>Total Amount</h6>
+                                    <p class="order-amount">${{ order.get('TotalAmount', '0.00') }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="order-detail">
+                                    <h6>Payment Method</h6>
+                                    <p>{{ order.get('PaymentMethod', 'Credit Card') }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="order-detail">
+                                    <h6>Shipping Address</h6>
+                                    <p class="order-address">{{ order.get('ShippingAddress', 'N/A') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="order-footer">
+                        <a href="{{ url_for('user.order_detail', order_id=order.get('OrderID', '')) }}" class="btn btn-primary">
+                            <i class="fas fa-eye me-1"></i> View Details
+                        </a>
+                        
+                        {% if order.get('Status', '').lower() == 'delivered' %}
+                        <button class="btn btn-outline-primary">
+                            <i class="fas fa-redo me-1"></i> Buy Again
+                        </button>
+                        {% endif %}
+                        
+                        {% if order.get('Status', '').lower() == 'pending' or order.get('Status', '').lower() == 'processing' %}
+                        <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelOrderModal" data-order-id="{{ order.get('OrderID', '') }}">
+                            <i class="fas fa-times me-1"></i> Cancel Order
+                        </button>
+                        {% endif %}
+                        
+                        {% if order.get('Status', '').lower() == 'delivered' %}
+                        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#reviewOrderModal" data-order-id="{{ order.get('OrderID', '') }}">
+                            <i class="fas fa-star me-1"></i> Write Review
+                        </button>
+                        {% endif %}
+                    </div>
+                    
+                    {% if order.get('Status', '').lower() == 'shipped' %}
+                    <div class="order-tracking">
+                        <div class="tracking-header">
+                            <h6><i class="fas fa-truck me-2"></i> Tracking Information</h6>
+                            <span class="tracking-number">Tracking #: {{ order.get('TrackingNumber', 'N/A') }}</span>
+                        </div>
+                        <div class="tracking-timeline">
+                            <div class="timeline-item active">
+                                <div class="timeline-point"></div>
+                                <div class="timeline-content">
+                                    <h6>Order Placed</h6>
+                                    <p>{{ order.get('OrderDate', '').strftime('%B %d, %Y') if order.get('OrderDate') else 'N/A' }}</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item active">
+                                <div class="timeline-point"></div>
+                                <div class="timeline-content">
+                                    <h6>Processing</h6>
+                                    <p>{{ (order.get('OrderDate', '') + timedelta(days=1)).strftime('%B %d, %Y') if order.get('OrderDate') else 'N/A' }}</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item active">
+                                <div class="timeline-point"></div>
+                                <div class="timeline-content">
+                                    <h6>Shipped</h6>
+                                    <p>{{ (order.get('OrderDate', '') + timedelta(days=2)).strftime('%B %d, %Y') if order.get('OrderDate') else 'N/A' }}</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-point"></div>
+                                <div class="timeline-content">
+                                    <h6>Out for Delivery</h6>
+                                    <p>Expected {{ (order.get('OrderDate', '') + timedelta(days=4)).strftime('%B %d, %Y') if order.get('OrderDate') else 'N/A' }}</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-point"></div>
+                                <div class="timeline-content">
+                                    <h6>Delivered</h6>
+                                    <p>Expected {{ (order.get('OrderDate', '') + timedelta(days=5)).strftime('%B %d, %Y') if order.get('OrderDate') else 'N/A' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-orders">
+                <div class="empty-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <h3>No Orders Yet</h3>
+                <p>You haven't placed any orders yet. Start shopping to see your orders here.</p>
+                <a href="{{ url_for('main.shop') }}" class="btn btn-primary">Start Shopping</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Cancel Order Modal -->
+<div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelOrderModalLabel">Cancel Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to cancel this order? This action cannot be undone.</p>
+                <form id="cancelOrderForm">
+                    <div class="mb-3">
+                        <label for="cancelReason" class="form-label">Reason for cancellation</label>
+                        <select class="form-select" id="cancelReason" required>
+                            <option value="">Select a reason</option>
+                            <option value="Changed my mind">Changed my mind</option>
+                            <option value="Found a better price elsewhere">Found a better price elsewhere</option>
+                            <option value="Ordered by mistake">Ordered by mistake</option>
+                            <option value="Shipping takes too long">Shipping takes too long</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" id="otherReasonContainer" style="display: none;">
+                        <label for="otherReason" class="form-label">Please specify</label>
+                        <textarea class="form-control" id="otherReason" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" id="confirmCancelBtn">Cancel Order</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Review Order Modal -->
+<div class="modal fade" id="reviewOrderModal" tabindex="-1" aria-labelledby="reviewOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reviewOrderModalLabel">Write a Review</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reviewForm">
+                    <div class="mb-3">
+                        <label class="form-label">Rating</label>
+                        <div class="rating">
+                            <i class="far fa-star" data-rating="1"></i>
+                            <i class="far fa-star" data-rating="2"></i>
+                            <i class="far fa-star" data-rating="3"></i>
+                            <i class="far fa-star" data-rating="4"></i>
+                            <i class="far fa-star" data-rating="5"></i>
+                        </div>
+                        <input type="hidden" id="ratingValue" value="0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="reviewTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="reviewTitle" placeholder="Summarize your experience">
+                    </div>
+                    <div class="mb-3">
+                        <label for="reviewContent" class="form-label">Review</label>
+                        <textarea class="form-control" id="reviewContent" rows="4" placeholder="Tell us about your experience with the products and service"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="submitReviewBtn">Submit Review</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/order.js') }}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Filter orders by status
+        const statusFilter = document.getElementById('statusFilter');
+        const orderCards = document.querySelectorAll('.order-card');
+        
+        statusFilter.addEventListener('change', function() {
+            const selectedStatus = this.value;
+            
+            orderCards.forEach(card => {
+                if (selectedStatus === 'all' || card.dataset.status === selectedStatus) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+        
+        // Search orders
+        const orderSearch = document.getElementById('orderSearch');
+        
+        orderSearch.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            orderCards.forEach(card => {
+                const orderText = card.textContent.toLowerCase();
+                if (orderText.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+        
+        // Show/hide other reason field
+        const cancelReason = document.getElementById('cancelReason');
+        const otherReasonContainer = document.getElementById('otherReasonContainer');
+        
+        cancelReason.addEventListener('change', function() {
+            if (this.value === 'Other') {
+                otherReasonContainer.style.display = 'block';
+            } else {
+                otherReasonContainer.style.display = 'none';
+            }
+        });
+        
+        // Star rating system
+        const stars = document.querySelectorAll('.rating i');
+        const ratingValue = document.getElementById('ratingValue');
+        
+        stars.forEach(star => {
+            star.addEventListener('mouseover', function() {
+                const rating = this.dataset.rating;
+                
+                // Reset all stars
+                stars.forEach(s => s.className = 'far fa-star');
+                
+                // Fill stars up to the hovered one
+                for (let i = 0; i < rating; i++) {
+                    stars[i].className = 'fas fa-star';
+                }
+            });
+            
+            star.addEventListener('mouseout', function() {
+                const currentRating = ratingValue.value;
+                
+                // Reset all stars
+                stars.forEach(s => s.className = 'far fa-star');
+                
+                // Fill stars up to the selected rating
+                for (let i = 0; i < currentRating; i++) {
+                    stars[i].className = 'fas fa-star';
+                }
+            });
+            
+            star.addEventListener('click', function() {
+                const rating = this.dataset.rating;
+                ratingValue.value = rating;
+                
+                // Fill stars up to the selected one
+                stars.forEach((s, index) => {
+                    s.className = index < rating ? 'fas fa-star' : 'far fa-star';
+                });
+            });
+        });
+    });
+    
+</script>
+{% endblock %}

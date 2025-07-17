@@ -1,0 +1,428 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Product Management - Admin Dashboard{% endblock %}
+
+{% block page_title %}Product Management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin-products.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="d-flex">
+                <a href="#" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                    <i class="fas fa-plus me-1"></i> Add Product
+                </a>
+                <a href="#" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#bulkUploadModal">
+                    <i class="fas fa-file-csv me-1"></i> Bulk Upload
+                </a>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="bulkActionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Bulk Actions
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="bulkActionsDropdown">
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-trash me-2"></i>Delete Selected</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-tag me-2"></i>Update Category</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-percent me-2"></i>Apply Discount</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <form class="d-flex" method="get" action="{{ url_for('admin.products') }}">
+                <input type="text" name="search" class="form-control me-2" placeholder="Search products..." value="{{ search_term or '' }}">
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="mb-0">Products List</h5>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="d-flex justify-content-md-end">
+                        <select class="form-select me-2" style="width: auto;" id="categoryFilter">
+                            <option value="">All Categories</option>
+                            {% for category in categories %}
+                            <option value="{{ category.CategoryID }}">{{ category.CategoryName }}</option>
+                            {% endfor %}
+                        </select>
+                        <button class="btn btn-outline-secondary" id="refreshBtn" onclick="window.location.reload()">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="selectAll">
+                                </div>
+                            </th>
+                            <th>ID</th>
+                            <th>Image</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if products %}
+                            {% for product in products %}
+                            <tr>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input product-checkbox" type="checkbox" value="{{ product.ProductID }}">
+                                    </div>
+                                </td>
+                                <td>{{ product.ProductID }}</td>
+                                <td>
+                                    <img src="{{ product.ImageURL }}" alt="{{ product.ProductName }}" class="product-thumbnail">
+                                </td>
+                                <td>{{ product.ProductName }}</td>
+                                <td>{{ product.CategoryName }}</td>
+                                <td>Rs {{ product.Price }}</td>
+                                <td>
+                                    <span class="badge {% if product.StockQuantity > 10 %}bg-success{% elif product.StockQuantity > 0 %}bg-warning{% else %}bg-danger{% endif %}">
+                                        {{ product.StockQuantity }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{{ url_for('admin.edit_product', product_id=product.ProductID) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteProductModal" data-product-id="{{ product.ProductID }}" data-product-name="{{ product.ProductName }}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center py-4">
+                                    <div class="empty-state">
+                                        <i class="fas fa-box empty-icon"></i>
+                                        <h5>No Products Found</h5>
+                                        <p>There are no products matching your criteria.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    Showing {{ products|length }} of {{ total_products }} products
+                </div>
+                
+                <!-- Simplified Pagination -->
+                {% if total_pages > 1 %}
+                <nav aria-label="Page navigation">
+                    <ul class="pagination mb-0">
+                        <!-- Previous Page -->
+                        <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                            <a class="page-link" href="{{ url_for('admin.products', page=page-1, search=search_term) }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        
+                        <!-- First Page -->
+                        {% if page > 3 %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.products', page=1, search=search_term) }}">1</a>
+                        </li>
+                        {% if page > 4 %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                        {% endif %}
+                        {% endif %}
+                        
+                        <!-- Page Numbers -->
+                        {% set start_page = [1, page-2]|sort %}
+                        {% set end_page = [total_pages, page+2]|sort %}
+                        
+                        {% for p in range(start_page[-1], end_page[0] + 1) %}
+                        <li class="page-item {% if p == page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('admin.products', page=p, search=search_term) }}">{{ p }}</a>
+                        </li>
+                        {% endfor %}
+                        
+                        <!-- Last Page -->
+                        {% if page < total_pages - 2 %}
+                        {% if page < total_pages - 3 %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                        {% endif %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.products', page=total_pages, search=search_term) }}">{{ total_pages }}</a>
+                        </li>
+                        {% endif %}
+                        
+                        <!-- Next Page -->
+                        <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+                            <a class="page-link" href="{{ url_for('admin.products', page=page+1, search=search_term) }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Product Modal -->
+<div class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="deleteProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteProductModalLabel">Delete Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the product <strong id="deleteProductName"></strong>?</p>
+                <p class="text-danger">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteProductForm" method="post" action="">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addProductForm" method="post" action="{{ url_for('admin.add_product_route') }}" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="productName" class="form-label">Product Name</label>
+                                <input type="text" class="form-control" id="productName" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productCategory" class="form-label">Category</label>
+                                <select class="form-select" id="productCategory" name="category_id" required>
+                                    {% for category in categories %}
+                                    <option value="{{ category.CategoryID }}">{{ category.CategoryName }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productPrice" class="form-label">Price</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="productPrice" name="price" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productStock" class="form-label">Stock Quantity</label>
+                                <input type="number" class="form-control" id="productStock" name="stock" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="productDescription" class="form-label">Description</label>
+                                <textarea class="form-control" id="productDescription" name="description" rows="5" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productImage" class="form-label">Product Image</label>
+                                <input type="file" class="form-control" id="productImage" name="image" accept="image/*">
+                                <div class="form-text">Upload a product image (optional)</div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="addProductForm" class="btn btn-primary">Add Product</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Upload Modal -->
+<div class="modal fade" id="bulkUploadModal" tabindex="-1" aria-labelledby="bulkUploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bulkUploadModalLabel">Bulk Upload Products</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="bulkUploadForm" method="post" action="{{ url_for('admin.bulk_upload_products') }}" enctype="multipart/form-data">
+                    <div class="mb-4">
+                        <h6>Instructions</h6>
+                        <p>Upload a CSV file with the following columns:</p>
+                        <div class="csv-format-info">
+                            <code>product_name,category_id,price,stock_quantity,description,image_url</code>
+                        </div>
+                        <p class="mt-2">Example:</p>
+                        <div class="csv-format-info">
+                            <code>Gaming Laptop,3,999.99,10,High performance gaming laptop,https://example.com/laptop.jpg</code>
+                        </div>
+                        <div class="mt-3">
+                            <a href="{{ url_for('admin.download_csv_template') }}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-download me-1"></i> Download Template
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="csvFile" class="form-label">CSV File</label>
+                        <input type="file" class="form-control" id="csvFile" name="csv_file" accept=".csv" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="headerRow" name="header_row" checked>
+                            <label class="form-check-label" for="headerRow">
+                                First row contains headers
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="skipExisting" name="skip_existing" checked>
+                            <label class="form-check-label" for="skipExisting">
+                                Skip existing products (based on product name)
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> For large files, the upload may take a few moments. Please do not refresh the page during upload.
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="bulkUploadForm" class="btn btn-success">
+                    <i class="fas fa-upload me-1"></i> Upload and Process
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Delete Product Modal
+        const deleteProductModal = document.getElementById('deleteProductModal');
+        if (deleteProductModal) {
+            deleteProductModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const productId = button.getAttribute('data-product-id');
+                const productName = button.getAttribute('data-product-name');
+                
+                document.getElementById('deleteProductName').textContent = productName;
+                
+                const form = document.getElementById('deleteProductForm');
+                form.action = "{{ url_for('admin.delete_product_route', product_id=0) }}".replace('0', productId);
+            });
+        }
+        
+        // Category Filter
+        const categoryFilter = document.getElementById('categoryFilter');
+        if (categoryFilter) {
+            categoryFilter.addEventListener('change', function() {
+                const categoryId = this.value;
+                let url = "{{ url_for('admin.products') }}";
+                
+                if (categoryId) {
+                    url += '?category=' + categoryId;
+                    
+                    // Add search parameter if it exists
+                    const searchParam = new URLSearchParams(window.location.search).get('search');
+                    if (searchParam) {
+                        url += '&search=' + searchParam;
+                    }
+                }
+                
+                window.location.href = url;
+            });
+            
+            // Set selected category from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryParam = urlParams.get('category');
+            if (categoryParam) {
+                categoryFilter.value = categoryParam;
+            }
+        }
+        
+        // Select All Checkbox
+        const selectAllCheckbox = document.getElementById('selectAll');
+        const productCheckboxes = document.querySelectorAll('.product-checkbox');
+        
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function() {
+                const isChecked = this.checked;
+                
+                productCheckboxes.forEach(checkbox => {
+                    checkbox.checked = isChecked;
+                });
+            });
+        }
+        
+        // CSV File Validation
+        const csvFileInput = document.getElementById('csvFile');
+        if (csvFileInput) {
+            csvFileInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    // Check file extension
+                    const fileExt = file.name.split('.').pop().toLowerCase();
+                    if (fileExt !== 'csv') {
+                        alert('Please upload a CSV file');
+                        this.value = '';
+                        return;
+                    }
+                    
+                    // Check file size (max 5MB)
+                    if (file.size > 100 * 1024 * 1024) {
+                        alert('File size exceeds 100MB limit');
+                        this.value = '';
+                        return;
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

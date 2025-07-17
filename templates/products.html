@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}Shop - E-commerce Store{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/shop.css') }}">
+{% endblock %}
+{% block content %}
+<div class="row">
+    <!-- Sidebar with Filters -->
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Filters</h5>
+            </div>
+            <div class="card-body">
+                <h6 class="mb-3">Categories</h6>
+                <div class="list-group mb-4">
+                    <a href="{{ url_for('main.shop') }}" class="list-group-item list-group-item-action {% if not current_category %}active{% endif %}">
+                        All Categories
+                    </a>
+                    {% for category in categories %}
+                    <a href="{{ url_for('main.shop', category=category.CategoryID) }}" class="list-group-item list-group-item-action {% if current_category == category.CategoryID %}active{% endif %}">
+                        {{ category.CategoryName }}
+                    </a>
+                    {% endfor %}
+                </div>
+                
+                <h6 class="mb-3">Price Range</h6>
+                <form action="{{ url_for('main.shop') }}" method="get">
+                    {% if current_category %}
+                    <input type="hidden" name="category" value="{{ current_category }}">
+                    {% endif %}
+                    {% if search_term %}
+                    <input type="hidden" name="search" value="{{ search_term }}">
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="min-price" class="form-label">Min Price:</label>
+                        <input type="number" class="form-control" id="min-price" name="min_price" min="0" step="0.01" value="{{ request.args.get('min_price', '') }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="max-price" class="form-label">Max Price:</label>
+                        <input type="number" class="form-control" id="max-price" name="max_price" min="0" step="0.01" value="{{ request.args.get('max_price', '') }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Product Grid -->
+    <div class="col-md-9">
+        <!-- Search and Sort Bar -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <form action="{{ url_for('main.shop') }}" method="get" class="d-flex">
+                            {% if current_category %}
+                            <input type="hidden" name="category" value="{{ current_category }}">
+                            {% endif %}
+                            <input type="text" class="form-control me-2" name="search" placeholder="Search products..." value="{{ search_term or '' }}">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </form>
+                    </div>
+                    <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                        <span class="me-2">Sort by:</span>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ request.args.get('sort', 'Newest') }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{{ url_for('main.shop', category=current_category, search=search_term, sort='Newest') }}">Newest</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.shop', category=current_category, search=search_term, sort='Price: Low to High') }}">Price: Low to High</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.shop', category=current_category, search=search_term, sort='Price: High to Low') }}">Price: High to Low</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.shop', category=current_category, search=search_term, sort='Name: A to Z') }}">Name: A to Z</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Products -->
+        {% if products %}
+        <div class="row">
+            {% for product in products %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="{{ product.ImageURL or url_for('static', filename='images/placeholder.jpg') }}" class="card-img-top" alt="{{ product.ProductName }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.ProductName }}</h5>
+                        <p class="card-text text-truncate">{{ product.Description }}</p>
+                        <p class="card-text fw-bold">${{ product.Price }}</p>
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('main.product_detail', product_id=product.ProductID) }}" class="btn btn-outline-primary">View</a>
+                            <form action="{{ url_for('main.cart_add', product_id=product.ProductID) }}" method="post">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-cart-plus"></i> Add
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('main.shop', category=current_category, search=search_term, page=page-1) }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for p in range(max(1, page-2), min(page+3, total_pages+1)) %}
+                <li class="page-item {% if p == page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('main.shop', category=current_category, search=search_term, page=p) }}">{{ p }}</a>
+                </li>
+                {% endfor %}
+                
+                {% if page < total_pages %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('main.shop', category=current_category, search=search_term, page=page+1) }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% else %}
+        <div class="alert alert-info">
+            <h4 class="alert-heading">No products found!</h4>
+            <p>We couldn't find any products matching your criteria. Try adjusting your filters or search terms.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

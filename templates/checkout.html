@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout - E-commerce Store{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Checkout</h1>
+
+<div class="row">
+    <!-- Checkout Form -->
+    <div class="col-lg-8">
+        <form action="{{ url_for('main.checkout') }}" method="post">
+            <!-- Customer Information -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Customer Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="full_name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="full_name" name="full_name" value="{{ g.user.FullName }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ g.user.Email }}" required readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" value="{{ g.user.PhoneNumber or '' }}" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Shipping Address -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Shipping Address</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="shipping_address" class="form-label">Address</label>
+                        <textarea class="form-control" id="shipping_address" name="shipping_address" rows="3" required>{{ g.user.Address or '' }}</textarea>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control" id="city" name="city" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="state" class="form-label">State</label>
+                            <select class="form-select" id="state" name="state" required>
+                                <option value="">Choose...</option>
+                                <option value="AL">Alabama</option>
+                                <option value="AK">Alaska</option>
+                                <!-- Add more states as needed -->
+                                <option value="WY">Wyoming</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="zip" class="form-label">Zip</label>
+                            <input type="text" class="form-control" id="zip" name="zip" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Method -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Payment Method</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="payment_method" id="credit_card" value="credit_card" checked>
+                        <label class="form-check-label" for="credit_card">
+                            Credit Card
+                        </label>
+                    </div>
+                    
+                    <div id="credit_card_details">
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="card_name" class="form-label">Name on Card</label>
+                                <input type="text" class="form-control" id="card_name" name="card_name">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="card_number" class="form-label">Card Number</label>
+                                <input type="text" class="form-control" id="card_number" name="card_number" placeholder="XXXX XXXX XXXX XXXX">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="expiration" class="form-label">Expiration</label>
+                                <input type="text" class="form-control" id="expiration" name="expiration" placeholder="MM/YY">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="cvv" class="form-label">CVV</label>
+                                <input type="text" class="form-control" id="cvv" name="cvv" placeholder="XXX">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex">
+                                <i class="fab fa-cc-visa fa-2x text-primary me-2"></i>
+                                <i class="fab fa-cc-mastercard fa-2x text-danger me-2"></i>
+                                <i class="fab fa-cc-amex fa-2x text-info me-2"></i>
+                                <i class="fab fa-cc-discover fa-2x text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="payment_method" id="paypal" value="paypal">
+                        <label class="form-check-label" for="paypal">
+                            <i class="fab fa-paypal text-primary me-2"></i>PayPal
+                        </label>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="payment_method" id="cash_on_delivery" value="cash_on_delivery">
+                        <label class="form-check-label" for="cash_on_delivery">
+                            <i class="fas fa-money-bill-wave text-success me-2"></i>Cash on Delivery
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
+                <a href="{{ url_for('main.cart') }}" class="btn btn-outline-secondary me-md-2">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Cart
+                </a>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-check-circle me-2"></i>Place Order
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Order Summary -->
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Order Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Qty</th>
+                                <th class="text-end">Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart_items %}
+                            <tr>
+                                <td>{{ item.ProductName }}</td>
+                                <td>{{ item.Quantity }}</td>
+                                <td class="text-end">${{ (item.Price * item.Quantity)|round(2) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <hr>
+                
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal:</span>
+                    <span>${{ total|round(2) }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Shipping:</span>
+                    <span>Free</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Tax (8%):</span>
+                    <span>${{ (total * 0.08)|round(2) }}</span>
+                </div>
+                
+                <hr>
+                
+                <div class="d-flex justify-content-between mb-2">
+                    <strong>Total:</strong>
+                    <strong>${{ (total * 1.08)|round(2) }}</strong>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-info mb-0">
+                    <i class="fas fa-info-circle me-2"></i>This is a demo checkout. No actual payment will be processed.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Toggle payment method details
+    document.querySelectorAll('input[name="payment_method"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            const creditCardDetails = document.getElementById('credit_card_details');
+            if (this.value === 'credit_card') {
+                creditCardDetails.style.display = 'block';
+            } else {
+                creditCardDetails.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}

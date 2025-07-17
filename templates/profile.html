@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - E-commerce Store{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Profile Sidebar -->
+        <div class="col-lg-3 mb-4">
+            <div class="profile-sidebar">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        {% if user.get('avatar') %}
+                        <img src="{{ user['avatar'] }}" alt="{{ user['name'] }}" class="avatar-img">
+                        {% else %}
+                        <div class="avatar-placeholder">
+                            <span>{{ user.get('FullName', 'U')[0] | upper }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <h4 class="profile-name">{{ user.get('FullName', 'User') }}</h4>
+                    <p class="profile-email">{{ user.get('Email', '') }}</p>
+                </div>
+                
+                <div class="profile-nav">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#profile-info" data-bs-toggle="tab">
+                                <i class="fas fa-user"></i> Personal Information
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#orders" data-bs-toggle="tab">
+                                <i class="fas fa-shopping-bag"></i> My Orders
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#security" data-bs-toggle="tab">
+                                <i class="fas fa-shield-alt"></i> Security
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="profile-actions">
+                    <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger w-100">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Content -->
+        <div class="col-lg-9">
+            <div class="tab-content">
+                <!-- Personal Information Tab -->
+                <div class="tab-pane fade show active" id="profile-info">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h5>Personal Information</h5>
+                            <p>Manage your personal details</p>
+                        </div>
+                        <div class="card-body">
+                            <form action="{{ url_for('user.profile') }}" method="post">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="full_name" class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" id="full_name" name="full_name" value="{{ user.get('FullName', '') }}">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="email" class="form-label">Email Address</label>
+                                        <input type="email" class="form-control" id="email" name="email" value="{{ user.get('Email', '') }}" readonly>
+                                        <div class="form-text">Email cannot be changed</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="phone_number" class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" id="phone_number" name="phone_number" value="{{ user.get('PhoneNumber', '') }}">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">Address</label>
+                                    <textarea class="form-control" id="address" name="address" rows="3">{{ user.get('Address', '') }}</textarea>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Orders Tab -->
+                <div class="tab-pane fade" id="orders">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h5>My Orders</h5>
+                            <p>View and track your orders</p>
+                        </div>
+                        <div class="card-body">
+                            {% if orders %}
+                                <div class="table-responsive">
+                                    <table class="table order-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Order ID</th>
+                                                <th>Date</th>
+                                                <th>Status</th>
+                                                <th>Total</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for order in orders %}
+                                            <tr>
+                                                <td>#{{ order['OrderID'] }}</td>
+                                                <td>{{ order['OrderDate'].strftime('%d %b %Y') if order['OrderDate'] else 'N/A' }}</td>
+                                                <td>
+                                                    <span class="status-badge status-{{ order.get('Status', '').lower() }}">
+                                                        {{ order.get('Status', 'Processing') }}
+                                                    </span>
+                                                </td>
+                                                <td>${{ order.get('TotalAmount', '0.00') }}</td>
+                                                <td>
+                                                    <a href="{{ url_for('user.order_detail', order_id=order['OrderID']) }}" class="btn btn-sm btn-outline-primary">
+                                                        View Details
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="empty-state">
+                                    <div class="empty-icon">
+                                        <i class="fas fa-shopping-bag"></i>
+                                    </div>
+                                    <h6>No Orders Yet</h6>
+                                    <p>You haven't placed any orders yet.</p>
+                                    <a href="{{ url_for('main.shop') }}" class="btn btn-primary">Start Shopping</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Security Tab -->
+                <div class="tab-pane fade" id="security">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h5>Security Settings</h5>
+                            <p>Manage your password and security settings</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info mb-4">
+                                <h6 class="alert-heading">Update Password</h6>
+                                <p>To change your password, please contact our support team.</p>
+                            </div>
+                            
+                            <hr class="my-4">
+                            
+                            <div class="account-danger-zone">
+                                <h6>Danger Zone</h6>
+                                <p>Once you delete your account, there is no going back. Please be certain.</p>
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                                    Delete Account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteAccountModalLabel">Delete Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+                <div class="alert alert-warning">
+                    <p>To delete your account, please contact our customer support team.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="{{ url_for('user.dashboard') }}" class="btn btn-danger">Contact Support</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

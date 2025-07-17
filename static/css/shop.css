@@ -1,0 +1,323 @@
+/* Modern Shop Page Styling */
+:root {
+  --primary: #0d6efd;
+  --primary-dark: #0b5ed7;
+  --primary-light: #e7f0ff;
+  --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  --hover-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  --border-radius: 12px;
+}
+
+/* Filter Sidebar */
+.col-md-3 .card {
+  position: sticky;
+  top: 20px;
+  border: none;
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.col-md-3 .card:hover {
+  box-shadow: var(--hover-shadow);
+}
+
+.col-md-3 .card-header {
+  background: linear-gradient(135deg, var(--primary), #4e85fd);
+  padding: 1.25rem 1.5rem;
+  border: none;
+}
+
+.col-md-3 .card-header h5 {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.col-md-3 .card-body {
+  padding: 1.5rem;
+}
+
+.col-md-3 h6 {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+/* Category List */
+.list-group {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.list-group-item {
+  border: none;
+  padding: 0.75rem 1.25rem;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.list-group-item:last-child {
+  border-bottom: none;
+}
+
+.list-group-item:hover {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  transform: translateX(5px);
+}
+
+.list-group-item.active {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  font-weight: 600;
+}
+
+/* Price Range Inputs */
+.form-control {
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  border: 1px solid #dee2e6;
+  background-color: #f8f9fa;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus {
+  border-color: var(--primary);
+  background-color: #fff;
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
+}
+
+.form-label {
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+
+/* Apply Filters Button */
+.col-md-3 .btn-primary {
+  background: linear-gradient(135deg, var(--primary), #4e85fd);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+}
+
+.col-md-3 .btn-primary:hover {
+  background: linear-gradient(135deg, #0b5ed7, #3d74e6);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+}
+
+/* Search and Sort Bar */
+.col-md-9 .card:first-of-type {
+  border: none;
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  margin-bottom: 2rem;
+}
+
+.col-md-9 .card:first-of-type .card-body {
+  padding: 1.25rem;
+}
+
+/* Search Form */
+.col-md-9 .d-flex .form-control {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.col-md-9 .d-flex .btn-primary {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* Sort Dropdown */
+.btn-outline-secondary {
+  border-color: #dee2e6;
+  color: #555;
+  background-color: #fff;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #f8f9fa;
+  border-color: #c1c9d0;
+  color: #333;
+}
+
+.dropdown-menu {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem 0;
+  min-width: 200px;
+}
+
+.dropdown-item {
+  padding: 0.6rem 1.25rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: var(--primary-light);
+  color: var(--primary);
+}
+
+/* Product Cards */
+.col-md-9 .col-md-4 .card {
+  border: none;
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.col-md-9 .col-md-4 .card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--hover-shadow);
+}
+
+.card-img-top {
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.card:hover .card-img-top {
+  transform: scale(1.05);
+}
+
+.card-title {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.card-text {
+  color: #6c757d;
+  margin-bottom: 1rem;
+}
+
+.card-text.fw-bold {
+  color: var(--primary);
+  font-size: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Card Buttons */
+.card .btn-outline-primary {
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.card .btn-outline-primary:hover {
+  background-color: var(--primary);
+  color: white;
+}
+
+.card .btn-primary {
+  background-color: var(--primary);
+  border: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.card .btn-primary:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+}
+
+/* Pagination */
+.pagination {
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+}
+
+.pagination .page-link {
+  border: none;
+  color: #555;
+  padding: 0.6rem 1rem;
+  margin: 0 0.25rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.pagination .page-link:hover {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.pagination .page-item.active .page-link {
+  background-color: var(--primary);
+  color: white;
+  box-shadow: 0 5px 10px rgba(13, 110, 253, 0.2);
+}
+
+.pagination .page-item.disabled .page-link {
+  color: #adb5bd;
+  background-color: #f8f9fa;
+}
+
+/* No Products Alert */
+.alert-info {
+  background-color: rgba(13, 202, 240, 0.1);
+  border: none;
+  border-radius: var(--border-radius);
+  color: #055160;
+  padding: 2rem;
+  box-shadow: var(--card-shadow);
+}
+
+.alert-info .alert-heading {
+  color: #055160;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .col-md-3 .card {
+    position: static;
+    margin-bottom: 2rem;
+  }
+  
+  .col-md-9 .card:first-of-type .card-body {
+    padding: 1rem;
+  }
+  
+  .col-md-9 .d-flex {
+    flex-direction: column;
+  }
+  
+  .col-md-9 .d-flex .form-control,
+  .col-md-9 .d-flex .btn-primary {
+    border-radius: 8px;
+    margin-right: 0;
+  }
+  
+  .col-md-9 .d-flex .btn-primary {
+    margin-top: 0.5rem;
+  }
+  
+  .card-img-top {
+    height: 180px;
+  }
+}

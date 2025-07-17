@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - E-commerce Store{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+{% block content %}
+<!-- Hero Banner -->
+<div class="bg-primary text-white p-5 mb-4 rounded">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">Welcome to Our E-commerce Store</h1>
+        <p class="col-md-8 fs-4">Find the best products at the best prices. Shop now and enjoy exclusive deals!</p>
+        <a href="{{ url_for('main.shop') }}" class="btn btn-light btn-lg">Shop Now</a>
+    </div>
+</div>
+
+<!-- Categories -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="mb-4">Shop by Category</h2>
+    </div>
+    {% for category in categories %}
+    <div class="col-md-3 mb-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <h5 class="card-title">{{ category.CategoryName }}</h5>
+                <p class="card-text">{{ category.Description }}</p>
+                <a href="{{ url_for('main.shop', category=category.CategoryID) }}" class="btn btn-primary">Browse</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Featured Products -->
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">Featured Products</h2>
+    </div>
+    {% for product in products %}
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <img src="{{ product.ImageURL or url_for('static', filename='images/placeholder.jpg') }}" class="card-img-top" alt="{{ product.ProductName }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.ProductName }}</h5>
+                <p class="card-text text-truncate">{{ product.Description }}</p>
+                <p class="card-text fw-bold">${{ product.Price }}</p>
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('main.product_detail', product_id=product.ProductID) }}" class="btn btn-outline-primary">View</a>
+                    <form action="{{ url_for('main.cart_add', product_id=product.ProductID) }}" method="post">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-cart-plus"></i> Add
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Call to Action -->
+<div class="bg-light p-5 rounded mt-5">
+    <div class="container-fluid py-5 text-center">
+        <h2 class="display-6 fw-bold">Subscribe to Our Newsletter</h2>
+        <p class="fs-5">Get the latest updates on new products and special promotions!</p>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form class="d-flex">
+                    <input class="form-control me-2" type="email" placeholder="Your email address" aria-label="Email">
+                    <button class="btn btn-primary" type="submit">Subscribe</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.ProductName }} - E-commerce Store{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('main.home') }}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('main.shop') }}">Shop</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('main.shop', category=product.CategoryID) }}">{{ product.CategoryName }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ product.ProductName }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <!-- Product Image -->
+    <div class="col-md-5 mb-4">
+        <div class="card">
+            <img src="{{ product.ImageURL or url_for('static', filename='images/placeholder.jpg') }}" class="card-img-top img-fluid" alt="{{ product.ProductName }}">
+        </div>
+    </div>
+    
+    <!-- Product Details -->
+    <div class="col-md-7">
+        <h1 class="mb-3">{{ product.ProductName }}</h1>
+        <p class="text-muted mb-3">Category: {{ product.CategoryName }}</p>
+        
+        <div class="mb-3">
+            <h3 class="text-primary">Rs {{ product.Price }}</h3>
+        </div>
+        
+        <div class="mb-4">
+            <span class="badge {% if product.StockQuantity > 10 %}bg-success{% elif product.StockQuantity > 0 %}bg-warning{% else %}bg-danger{% endif %} mb-2">
+                {% if product.StockQuantity > 10 %}
+                    In Stock
+                {% elif product.StockQuantity > 0 %}
+                    Low Stock ({{ product.StockQuantity }} left)
+                {% else %}
+                    Out of Stock
+                {% endif %}
+            </span>
+            
+            <p class="mb-4">{{ product.Description }}</p>
+            
+            <form action="{{ url_for('main.cart_add', product_id=product.ProductID) }}" method="post" class="mb-4">
+                <div class="row g-3 align-items-center">
+                    <div class="col-auto">
+                        <label for="quantity" class="col-form-label">Quantity:</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="number" id="quantity" name="quantity" class="form-control" min="1" max="{{ product.StockQuantity }}" value="1" {% if product.StockQuantity <= 0 %}disabled{% endif %}>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary" {% if product.StockQuantity <= 0 %}disabled{% endif %}>
+                            <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="d-flex mb-3">
+                <button class="btn btn-outline-primary me-2">
+                    <i class="far fa-heart me-1"></i>Add to Wishlist
+                </button>
+                <button class="btn btn-outline-secondary">
+                    <i class="fas fa-share-alt me-1"></i>Share
+                </button>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Product Details</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <tbody>
+                        <tr>
+                            <th scope="row" style="width: 30%;">Product ID</th>
+                            <td>{{ product.ProductID }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Category</th>
+                            <td>{{ product.CategoryName }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Availability</th>
+                            <td>{{ product.StockQuantity }} in stock</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Product Tabs -->
+<div class="card mb-5">
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs" id="productTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab" aria-controls="description" aria-selected="true">Description</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">Reviews</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" type="button" role="tab" aria-controls="shipping" aria-selected="false">Shipping & Returns</button>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body">
+        <div class="tab-content" id="productTabsContent">
+            <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+                <p>{{ product.Description }}</p>
+            </div>
+            <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                <div class="mb-4">
+                    <h5>Customer Reviews</h5>
+                    <p>There are no reviews yet. Be the first to review this product!</p>
+                    
+                    <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#reviewForm" aria-expanded="false" aria-controls="reviewForm">
+                        Write a Review
+                    </button>
+                    
+                    <div class="collapse mt-3" id="reviewForm">
+                        <div class="card card-body">
+                            <form>
+                                <div class="mb-3">
+                                    <label for="rating" class="form-label">Rating</label>
+                                    <select class="form-select" id="rating" required>
+                                        <option value="">Select rating</option>
+                                        <option value="5">5 Stars - Excellent</option>
+                                        <option value="4">4 Stars - Very Good</option>
+                                        <option value="3">3 Stars - Good</option>
+                                        <option value="2">2 Stars - Fair</option>
+                                        <option value="1">1 Star - Poor</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reviewTitle" class="form-label">Review Title</label>
+                                    <input type="text" class="form-control" id="reviewTitle" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reviewContent" class="form-label">Review</label>
+                                    <textarea class="form-control" id="reviewContent" rows="3" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit Review</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="shipping" role="tabpanel" aria-labelledby="shipping-tab">
+                <h5>Shipping Information</h5>
+                <p>We ship all orders within 1-2 business days.</p>
+                
+                <h5>Return Policy</h5>
+                <p>If you're not satisfied with your purchase, you can return it within 30 days for a full refund.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Related Products -->
+<div class="row">
+    <div class="col-12">
+        <h3 class="mb-4">Related Products</h3>
+    </div>
+    
+    {% for related in related_products %}
+    {% if related.ProductID != product.ProductID %}
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <img src="{{ related.ImageURL or url_for('static', filename='images/placeholder.jpg') }}" class="card-img-top" alt="{{ related.ProductName }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ related.ProductName }}</h5>
+                <p class="card-text text-truncate">{{ related.Description }}</p>
+                <p class="card-text fw-bold">${{ related.Price }}</p>
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('main.product_detail', product_id=related.ProductID) }}" class="btn btn-outline-primary">View</a>
+                    <form action="{{ url_for('main.cart_add', product_id=related.ProductID) }}" method="post">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-cart-plus"></i> Add
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Quantity input validation
+    document.getElementById('quantity').addEventListener('change', function() {
+        const max = parseInt(this.getAttribute('max'));
+        const value = parseInt(this.value);
+        
+        if (value > max) {
+            this.value = max;
+            alert(`Sorry, only ${max} items available in stock.`);
+        }
+        
+        if (value < 1) {
+            this.value = 1;
+        }
+    });
+</script>
+{% endblock %}
